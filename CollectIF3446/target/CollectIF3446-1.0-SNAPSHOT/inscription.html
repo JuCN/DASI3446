@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+ <head>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <title>
+   Inscription
+  </title>
+ </head>
+ <body>
+     <div id="Inscription">
+       
+         <form id ="Ins" action="./CollectIFControleur">
+             <input type="hidden" name="todo" id="todo"value ="inscription">
+  <div class="form-group">
+    <label for="exampleInputNom">Nom</label>
+    <input type="Nom" class="form-control" name="Nom" id="Nom" placeholder="Nom">
+  </div>
+    <div class="form-group">
+    <label for="exampleInputPrenom">Prenom</label>
+    <input type="Prenom" class="form-control" name="Prenom" id="Prenom" placeholder="Prenom">
+  </div>
+   <div class="form-group">
+    <label for="exampleInputMail">Mail</label>
+    <input type="Mail" class="form-control" name="Mail" id="Mail" placeholder="Mail">
+  </div>
+   <div class="form-group">
+    <label for="exampleInputAdresse">Adresse</label>
+    <input type="AdresseRue" class="form-control" name="Rue" id="Rue" placeholder="Rue">
+    <input type="AdresseVille" class="form-control" name="Ville" id="Ville" placeholder="Ville">
+  </div>
+  <button type="submit" class="btn btn-default">Valider</button>
+</form>
+     </div>
+    
+ </body>
+</html>

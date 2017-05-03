@@ -7,7 +7,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 import metier.modele.Activite;
 import metier.modele.Adherent;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-04-12T17:29:45")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2017-05-03T16:09:59")
 @StaticMetamodel(Demande.class)
 public class Demande_ { 
 

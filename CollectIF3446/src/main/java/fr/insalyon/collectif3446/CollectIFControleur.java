@@ -12,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dao.JpaUtil;
 import fr.insalyon.collectif3446.actions.Action;
+import fr.insalyon.collectif3446.actions.InscriptionAction;
 import fr.insalyon.collectif3446.actions.ListeActiviteAction;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,6 +39,28 @@ public class CollectIFControleur extends HttpServlet {
         JpaUtil.creerEntityManager();
 
         switch (todo) {
+            case "inscription" : {
+                Action Ia = new InscriptionAction();
+                Ia.execute(request);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                boolean res = (boolean) request.getAttribute("res");
+                PrintWriter out = response.getWriter();
+                if(res){
+                    out.println("<!DOCTYPE html>");
+                    out.println("<html>");
+                    out.println("<head>");
+                    out.println("<title>Servlet ActionServlet</title>");
+                    out.println("</head>");
+                    out.println("<body>");
+                    out.println("Bravo ! Vous êtes connecté ! <br/> <a href='menu.html'>Aller au Menu</a>");
+                    out.println("</body>");
+                    out.println("</html>");
+                } else {
+                    response.sendRedirect("echecConnexion.html");
+                }
+                break;
+            }
             case "listeActivites": {
                 Action la = new ListeActiviteAction();
                 la.execute(request);
@@ -61,7 +84,7 @@ public class CollectIFControleur extends HttpServlet {
                 break;
             }
             default: {
-
+                break;
             }
         }
         JpaUtil.fermerEntityManager();

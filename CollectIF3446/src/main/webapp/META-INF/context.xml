@@ -1,2 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/CollectIF3446"/>
+<Context path="/CollectIF3446">
+  <Resource auth="Container" driverClassName="org.apache.derby.jdbc.ClientDriver" maxActive="20" maxIdle="10" maxWait="-1" name="Test" password="jcn.in972@Jcn" type="javax.sql.DataSource" url="jdbc:derby://localhost:1527/CollectifBD" username="JuCN"/>
+  <Resource auth="Container" driverClassName="org.apache.derby.jdbc.ClientDriver" maxActive="20" maxIdle="10" maxWait="-1" name="Test2" password="Juju" type="javax.sql.DataSource" url="jdbc:derby://localhost:1527/CollectifBD" username="Juju"/>
+</Context>
