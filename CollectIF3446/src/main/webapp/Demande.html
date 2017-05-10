@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <title>
+   Demande d'Activité
+  </title>
+ </head>
+ <body>
+<h1>Demande d'activité</h1>
+<p>Liste activités</p>
+<form id="Demande" action="./CollectIFControleur">
+    <input type="hidden" name="todo" value="demande"> 
+    <div id="Activites">
+    <select class="form-control" name="Activityform">
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+  </select>
+    </div>
+    <div class="form-group">
+    <label for="exampleInputPrenom">Date</label>
+    <input type="Date" class="form-control" id="Date" placeholder="JJ/MM/AAAA">
+  </div>
+<p>Moment</p>
+  <select class="form-control" name="Momentform">
+    <option>Matin</option>
+    <option>Apres-midi</option>
+    <option>Soir</option>
+  </select>
+    <a href="menu.html"> Revenir à la page principal</a>
+    <button type="submit" class="btn btn-default">Valider</button>
+</form>
+ </body>
+</html>

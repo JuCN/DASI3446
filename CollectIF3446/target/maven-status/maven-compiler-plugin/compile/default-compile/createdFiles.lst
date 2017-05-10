@@ -1,0 +1,6 @@
+fr\insalyon\collectif3446\actions\ActiviteAction.class
+fr\insalyon\collectif3446\actions\InscriptionAction.class
+fr\insalyon\collectif3446\actions\ConnexionAction.class
+fr\insalyon\collectif3446\actions\ListeActiviteAction.class
+fr\insalyon\collectif3446\CollectIFControleur.class
+fr\insalyon\collectif3446\actions\Action.class

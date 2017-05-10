@@ -12,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dao.JpaUtil;
 import fr.insalyon.collectif3446.actions.Action;
+import fr.insalyon.collectif3446.actions.ConnexionAction;
 import fr.insalyon.collectif3446.actions.InscriptionAction;
 import fr.insalyon.collectif3446.actions.ListeActiviteAction;
 import java.io.IOException;
@@ -23,14 +24,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import metier.modele.Activite;
+import metier.modele.Adherent;
 
 /**
  *
  * @author jcharlesni
  */
+
+
 @WebServlet(name = "CollectIFControleur", urlPatterns = {"/CollectIFControleur"})
 public class CollectIFControleur extends HttpServlet {
 
+    private Adherent adh = null;
+    
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -39,6 +45,19 @@ public class CollectIFControleur extends HttpServlet {
         JpaUtil.creerEntityManager();
 
         switch (todo) {
+            case "connexion" : {
+                Action cA = new ConnexionAction();
+                cA.execute(request);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                adh = (Adherent) request.getAttribute("adh");
+                if(adh != null){
+                    response.sendRedirect("reussiteConnexion.html");
+                } else {
+                    response.sendRedirect("echecConnexion.html");
+                }
+                break;
+            }
             case "inscription" : {
                 Action Ia = new InscriptionAction();
                 Ia.execute(request);
@@ -47,15 +66,7 @@ public class CollectIFControleur extends HttpServlet {
                 boolean res = (boolean) request.getAttribute("res");
                 PrintWriter out = response.getWriter();
                 if(res){
-                    out.println("<!DOCTYPE html>");
-                    out.println("<html>");
-                    out.println("<head>");
-                    out.println("<title>Servlet ActionServlet</title>");
-                    out.println("</head>");
-                    out.println("<body>");
-                    out.println("Bravo ! Vous êtes connecté ! <br/> <a href='menu.html'>Aller au Menu</a>");
-                    out.println("</body>");
-                    out.println("</html>");
+                    response.sendRedirect("reussiteConnexion.html");
                 } else {
                     response.sendRedirect("echecConnexion.html");
                 }
