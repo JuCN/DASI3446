@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Collect'IF - Liste des Evenements</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
+    </head>
+    <body>
+        <h1>Collect'IF &ndash; Liste des Evenements</h1>
+        <div id='listeEvenements'>
+            <span>chargement en cours...</span>
+        </div>
+        
+        <a href="menuAdmin.html">Retour au menu</a>
+
+
+        <script>
+            
+            $(function() {
+
+                $.ajax({
+                    url: './CollectIFControleur',
+                    type: 'POST',
+                    data: {
+                        todo: 'listeEvenements'
+                      //  param: '[...]' // etc.
+                    },
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    var evenements = data.evenements;
+                    var contenuHtml = '<ul>';
+                    var i;
+                    for (i = 0; i < evenements.length; i++) {
+                        contenuHtml += '<li>' + "[" + evenements[i].id + "] " + evenements[i].denomination +"<br/> Date : "+evenements[i].date +"<br/> Moment : " +evenements[i].moment
+                        +"<br/>"+evenements[i].payant+"<br/>Statut : "+evenements[i].statut+ "<br/><br/>";
+                    }
+                    contenuHtml += '</ul>';
+                    $('#listeEvenements').html(contenuHtml);
+
+
+                })
+                .fail(function() {
+                    $('#listeEvenements').html('ERREUR de chargement');
+                })
+                .always(function() {
+                    //
+                });
+
+            });
+            
+            
+
+        </script>
+    </body>
+</html>

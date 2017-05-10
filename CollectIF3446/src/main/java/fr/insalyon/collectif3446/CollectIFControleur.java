@@ -13,8 +13,11 @@ import com.google.gson.JsonObject;
 import dao.JpaUtil;
 import fr.insalyon.collectif3446.actions.Action;
 import fr.insalyon.collectif3446.actions.ConnexionAction;
+import fr.insalyon.collectif3446.actions.DemandeAction;
+import fr.insalyon.collectif3446.actions.HistoriqueAction;
 import fr.insalyon.collectif3446.actions.InscriptionAction;
 import fr.insalyon.collectif3446.actions.ListeActiviteAction;
+import fr.insalyon.collectif3446.actions.ListeEvenementAction;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -26,6 +29,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import metier.modele.Activite;
 import metier.modele.Adherent;
+import metier.modele.Demande;
+import metier.modele.Evenement;
 
 /**
  *
@@ -60,19 +65,42 @@ public class CollectIFControleur extends HttpServlet {
                 Adherent adh = (Adherent)session.getAttribute("adh");
                 request.setAttribute("adh", adh);
                 Action dA = new DemandeAction();
+                dA.execute(request);
+                boolean res = (boolean) request.getAttribute("res");
+                if(res){
+                    response.sendRedirect("menu.html");
+                } else {
+                    System.out.println("Demande non acceptée !");
+                    response.sendRedirect("menu.html");
+                }
+                break;
+            }
+            case "historique" : {
+                Adherent adh = (Adherent)session.getAttribute("adh");
+                request.setAttribute("adh", adh);
+                Action hA = new HistoriqueAction();
+                hA.execute(request);
+                List<Demande> historique = (List<Demande>) request.getAttribute("historique");
+                PrintWriter out = response.getWriter();
+                printHistorique(out, historique);
                 break;
             }
             case "connexion" : {
-                Action cA = new ConnexionAction();
-                cA.execute(request);
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                Adherent adh = (Adherent) request.getAttribute("adh");
-                session.setAttribute("adh",adh );
-                if(adh != null){
-                    response.sendRedirect("reussiteConnexion.html");
+                String mail = request.getParameter("Mail");
+                if(!mail.equals("rebarbatIF")){
+                    Action cA = new ConnexionAction();
+                    cA.execute(request);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    Adherent adh = (Adherent) request.getAttribute("adh");
+                    session.setAttribute("adh",adh );
+                    if(adh != null){
+                        response.sendRedirect("reussiteConnexion.html");
+                    } else {
+                        response.sendRedirect("echecConnexion.html");
+                    }
                 } else {
-                    response.sendRedirect("echecConnexion.html");
+                    response.sendRedirect("menuAdmin.html");
                 }
                 break;
             }
@@ -90,6 +118,16 @@ public class CollectIFControleur extends HttpServlet {
                 } else {
                     response.sendRedirect("echecConnexion.html");
                 }
+                break;
+            }
+            case "listeEvenements": {
+                Action lEA = new ListeEvenementAction();
+                lEA.execute(request);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                List<Evenement> lesEvenements = (List<Evenement>) request.getAttribute("evenements");
+                PrintWriter out = response.getWriter();
+                printListeEvenements(out, lesEvenements);
                 break;
             }
             case "listeActivites": {
@@ -146,6 +184,57 @@ public class CollectIFControleur extends HttpServlet {
 
         JsonObject container = new JsonObject();
         container.add("activites", jsonListe);
+        out.println(gson.toJson(container));
+    }
+    
+    private void printListeEvenements(PrintWriter out, List<Evenement> lesEvenements) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonArray jsonListe = new JsonArray();
+        for (Evenement a : lesEvenements) {
+            JsonObject jsonActivites = new JsonObject();
+            jsonActivites.addProperty("id", a.getId());
+            jsonActivites.addProperty("denomination", a.getActivite().getDenomination());
+            String pay = "Payant";
+            if(!a.getActivite().getPayant()){
+                pay = "Gratuit";
+            }
+            jsonActivites.addProperty("payant", pay);
+            jsonActivites.addProperty("date", a.getDate().getDay());
+            jsonActivites.addProperty("moment", a.getMoment());
+            String res = "planifié";
+            if(a.getLieu()==null){
+                res = "à planifier";
+            }
+            jsonActivites.addProperty("statut", res);
+            jsonListe.add(jsonActivites);
+        }
+
+        JsonObject container = new JsonObject();
+        container.add("evenements", jsonListe);
+        out.println(gson.toJson(container));
+    }
+    
+     private void printHistorique(PrintWriter out, List<Demande> historique) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonArray jsonListe = new JsonArray();
+        for (Demande a : historique) {
+            JsonObject jsonActivites = new JsonObject();
+            jsonActivites.addProperty("id", a.getId());
+            jsonActivites.addProperty("denomination", a.getActivite().getDenomination());
+            jsonActivites.addProperty("date", a.getDate().toString());
+            jsonActivites.addProperty("moment", a.getMoment());
+            String res = "validée";
+            if(!a.isConfirme()){
+                res = "non "+res;
+            }
+            jsonActivites.addProperty("statut", res);
+            jsonListe.add(jsonActivites);
+        }
+
+        JsonObject container = new JsonObject();
+        container.add("historique", jsonListe);
         out.println(gson.toJson(container));
     }
 

@@ -11,10 +11,48 @@
  </head>
  <body>
 <h2>Historique des demandes : </h2>
-<p style="border-width:1px;
- border-style:solid;
- border-color:black;"> aaaaaaaaaaaaaaa <br/>bbbbbbbbbbbbbbbbbbbbbb </p>
+<div id="historique">
+    Chargement en cours..
+</div>
  
     <a href="menu.html"> Revenir à la page principal</a>
  </body>
 </html>
+<script>
+            
+            $(function() {
+
+                $.ajax({
+                    url: './CollectIFControleur',
+                    type: 'POST',
+                    data: {
+                        todo: 'historique'
+                      //  param: '[...]' // etc.
+                    },
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    var historique = data.historique;
+                    var contenuHtml = '<ul>';
+                    var i;
+                    for (i = 0; i < historique.length; i++) {
+                        contenuHtml += '<li>' + "[" + historique[i].id + "] " + historique[i].denomination +"<br/> Date : "+historique[i].date +"<br/> Moment : " +historique[i].moment
+                        +"<br/>Statut : "+historique[i].statut+ "<br/><br/>";
+                    }
+                    contenuHtml += '</ul>';
+                    $('#historique').html(contenuHtml);
+
+
+                })
+                .fail(function() {
+                    $('#hhistorique').html('ERREUR de chargement');
+                })
+                .always(function() {
+                    //
+                });
+
+            });
+            
+            
+
+        </script>

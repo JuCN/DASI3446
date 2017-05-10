@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import metier.modele.Activite;
 import metier.modele.Adherent;
+import metier.modele.Demande;
 
 /**
  *
@@ -25,6 +26,7 @@ public class DemandeAction extends Action {
         Adherent adh = (Adherent) request.getAttribute("adh");
         String activite = request.getParameter("activite");
         String date = request.getParameter("date");
+        System.out.println(date);
         String moment = request.getParameter("moment");
         
         try {
@@ -32,13 +34,20 @@ public class DemandeAction extends Action {
         } catch (Exception ex) {
             Logger.getLogger(ListeActiviteAction.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println(date);
         Activite a = null;
         for(int i=0; i<activites.size(); i++){
-            
+            if(activites.get(i).getDenomination().equals(activite)){
+                a = activites.get(i);
+                break;
+            }
         }
         
+        Demande demande = new Demande(adh, a, date, moment);
+        
+        boolean res = service.posterDemande(demande);
        
-        request.setAttribute("activites", activites);
+        request.setAttribute("res", res);
     }
 
 }
