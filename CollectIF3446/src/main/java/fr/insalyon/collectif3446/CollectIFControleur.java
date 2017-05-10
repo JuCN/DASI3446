@@ -23,6 +23,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import metier.modele.Activite;
 import metier.modele.Adherent;
 
@@ -35,22 +36,39 @@ import metier.modele.Adherent;
 @WebServlet(name = "CollectIFControleur", urlPatterns = {"/CollectIFControleur"})
 public class CollectIFControleur extends HttpServlet {
 
-    private Adherent adh = null;
     
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String todo = request.getParameter("todo");
+        HttpSession session = request.getSession(true);
         JpaUtil.creerEntityManager();
-
+        
         switch (todo) {
+            case "menu" : {
+                Adherent adh = (Adherent)session.getAttribute("adh");
+                if(adh!=null){
+                    PrintWriter out = response.getWriter();
+                    printUserName(out, adh);
+                } else {
+                    System.out.println("L'utilisateur n'existe pas !");
+                }
+                break;
+            }
+            case "demande" : {
+                Adherent adh = (Adherent)session.getAttribute("adh");
+                request.setAttribute("adh", adh);
+                Action dA = new DemandeAction();
+                break;
+            }
             case "connexion" : {
                 Action cA = new ConnexionAction();
                 cA.execute(request);
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
-                adh = (Adherent) request.getAttribute("adh");
+                Adherent adh = (Adherent) request.getAttribute("adh");
+                session.setAttribute("adh",adh );
                 if(adh != null){
                     response.sendRedirect("reussiteConnexion.html");
                 } else {
@@ -64,9 +82,11 @@ public class CollectIFControleur extends HttpServlet {
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 boolean res = (boolean) request.getAttribute("res");
+                Adherent adh = (Adherent) request.getAttribute("adh");
                 PrintWriter out = response.getWriter();
                 if(res){
                     response.sendRedirect("reussiteConnexion.html");
+                    session.setAttribute("adh", adh);
                 } else {
                     response.sendRedirect("echecConnexion.html");
                 }
@@ -144,6 +164,15 @@ public class CollectIFControleur extends HttpServlet {
         jsonActivite.addProperty("payant", pay);
         jsonActivite.addProperty("nbParticipants", a.getNbParticipants());
         out.println(gson.toJson(jsonActivite));
+    }
+    
+    private void printUserName(PrintWriter out, Adherent adh) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonObject jsonAdherent = new JsonObject();
+        jsonAdherent.addProperty("nom", adh.getNom());
+        jsonAdherent.addProperty("prenom", adh.getPrenom());
+        out.println(gson.toJson(jsonAdherent));
     }
 
     @Override

@@ -5,6 +5,9 @@
   <title>
    Demande d'Activité
   </title>
+<meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width">
+ <script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
  </head>
  <body>
 <h1>Demande d'activité</h1>
@@ -12,20 +15,18 @@
 <form id="Demande" action="./CollectIFControleur">
     <input type="hidden" name="todo" value="demande"> 
     <div id="Activites">
-    <select class="form-control" name="Activityform">
     <option>1</option>
     <option>2</option>
     <option>3</option>
     <option>4</option>
     <option>5</option>
-  </select>
     </div>
     <div class="form-group">
     <label for="exampleInputPrenom">Date</label>
-    <input type="Date" class="form-control" id="Date" placeholder="JJ/MM/AAAA">
+    <input type="Date" class="form-control" id="date" placeholder="JJ/MM/AAAA">
   </div>
 <p>Moment</p>
-  <select class="form-control" name="Momentform">
+  <select class="form-control" name="moment">
     <option>Matin</option>
     <option>Apres-midi</option>
     <option>Soir</option>
@@ -35,3 +36,41 @@
 </form>
  </body>
 </html>
+
+<script>
+            
+            $(function() {
+
+                $.ajax({
+                    url: './CollectIFControleur',
+                    type: 'POST',
+                    data: {
+                        todo: 'listeActivites'
+                      //  param: '[...]' // etc.
+                    },
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    var activites = data.activites;
+                    var contenuHtml = "<select class='form-control' name='activite'>";
+                    var i;
+                    for (i = 0; i < activites.length; i++) {
+                        contenuHtml += "<option>" + activites[i].denomination + "</option>";
+                    }
+                    contenuHtml += '</select>';
+                    $('#Activites').html(contenuHtml);
+
+
+                })
+                .fail(function() {
+                    $('#Activites').html('ERREUR de chargement');
+                })
+                .always(function() {
+                    //
+                });
+
+            });
+            
+            
+
+        </script>

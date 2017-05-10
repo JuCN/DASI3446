@@ -38,5 +38,6 @@ public class InscriptionAction extends Action {
         }
        
         request.setAttribute("res", res);
+        request.setAttribute("adh", adh);
     }
 }

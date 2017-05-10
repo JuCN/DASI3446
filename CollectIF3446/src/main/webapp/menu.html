@@ -5,9 +5,14 @@
   <title>
       Menu
   </title>
+ <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+ <script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
  </head>
  <body>
- <p>Bonjour, Madame Lechat</p>
+     <div id="Bonjour">
+         Chargement..
+     </div>
    <p>
   <a button type="button" class="btn btn-default" href="Demande.html">Demande d'activité</a>
   </p>
@@ -22,3 +27,37 @@
 </p>
  </body>
 </html>
+
+<script>
+            
+            $(function() {
+
+                $.ajax({
+                    url: './CollectIFControleur',
+                    type: 'POST',
+                    data: {
+                        todo: 'menu'
+                      //  param: '[...]' // etc.
+                    },
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    var nom = data.nom;
+                    var prenom = data.prenom;
+                    var contenuHtml = 'Bonjour '+ prenom + " " + nom + " !";
+                    $('#Bonjour').html(contenuHtml);
+
+
+                })
+                .fail(function() {
+                    $('#Bonjour').html('ERREUR de chargement');
+                })
+                .always(function() {
+                    //
+                });
+
+            });
+            
+            
+
+        </script>
