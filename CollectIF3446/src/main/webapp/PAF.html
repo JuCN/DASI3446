@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Traiter</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
+        <style type="text/css">
+            html, body { height: 100%; margin: 0; padding: 0; }
+            #map { height: 100%; }
+        </style>
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <body>
+        <div id="infos">
+            Chargement...
+        </div>
+        <form id="Traitement" action="./CollectIFControleur">
+        <input type="hidden" name="todo" value="traiter"> 
+        
+        <div class="form-group">
+            <label for="Input">PAF</label>
+            <input type="text" class="form-control" name="PAF" id="PAF" placeholder="Prix à fixer">
+        </div>
+        <div id="lieux">
+        <label>Lieux</label>
+        <select class="form-control" name="lieux">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+        </select>
+        </div>
+        <div id="map"></div>
+        <script type="text/javascript">
+
+            var map;
+
+            function makeInfoWindow(title) {
+                return new google.maps.InfoWindow({
+                    content: '<div>Information: ' + title + '</div>'
+                });
+            }
+
+            function attachInfoWindow(marker, infowindow, htmlDescription) {
+                marker.addListener('click', function() {
+
+                    infowindow.setContent(htmlDescription);
+                    infowindow.open(map, this);
+                });
+            }
+
+            function initMap() {
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 45.7601424, lng: 4.8961779},
+                    zoom: 13
+                });
+
+                var infowindow = makeInfoWindow('');
+
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: {lat: 45.782122, lng: 4.872735},
+                    title: "Département IF, INSA de Lyon",
+                    icon: {url: './image/bird.png', scaledSize: new google.maps.Size(32, 32)}
+                });
+
+                marker.addListener('click', function() {
+
+                    infowindow.setContent('<div>Information: ' + marker.title + '</div>');
+                    infowindow.open(map, marker);
+                });
+
+                var marker2 = new google.maps.Marker({
+                    map: map,
+                    position: {lat: 45.782592, lng: 4.878238},
+                    title: "Entrée principale, INSA de Lyon",
+                    icon: {url: './image/snake.png', scaledSize: new google.maps.Size(32, 32)}
+                });
+
+                marker2.addListener('click', function() {
+
+                    infowindow.setContent('<div>Information: ' + marker2.title + '</div>');
+                    infowindow.open(map, marker2);
+                });
+
+                $.ajax({
+                    url: './CollectIFControleur',
+                    type: 'POST',
+                    data: {
+                        todo : 'carte',
+                        id : window.location.search.substring(1)
+                    },
+                    dataType: 'json'
+                })
+                        .done(function(data) {
+
+                            var lieux = data.lieux;
+                            var adherents = data.adherents;
+                            var i;
+                            for (i = 0; i < lieux.length; i++) {
+
+                                var lieu = lieux[i];
+
+                                var marker = new google.maps.Marker({
+                                    map: map,
+                                    position: {lat: lieu.latitude, lng: lieu.longitude},
+                                    title: lieu.denomination
+                                });
+
+                                attachInfoWindow(
+                                        marker, infowindow,
+                                        '<div><strong>' + lieu.id + lieu.denomination + '</strong><br/>' + lieu.adresse + '<br/>' + lieu.description + '</div>'
+                                        );
+                            }
+                            for (i = 0; i < adherents.length; i++) {
+
+                                var adh = adherents[i];
+
+                                var marker = new google.maps.Marker({
+                                    map: map,
+                                    position: {lat: adh.latitude, lng: adh.longitude},
+                                    title: adh.denomination
+                                });
+
+                                attachInfoWindow(
+                                        marker, infowindow,
+                                       '<div><strong>' + adh.id + adh.nom + '</strong><br/>' + adh.adresse + '<br/>' + adh.description + '</div>'
+                                        );
+                            }
+
+                        })
+                        .fail(function() {
+                            //
+                        })
+                        .always(function() {
+                            //
+                        });
+            }
+
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAklw96N9rLd93ubr-F04CN7qi2ryKayAc&callback=initMap">
+            </script>
+        <a href="menuAdmin.html"> Revenir à la page principal</a> <br>
+        <button type="submit" class="btn btn-default">Valider</button>
+    </form>
+        <a button type="button" class="btn btn-default" href="listeLieux.html">Afficher liste des lieux</a>
+    </body>
+</html>
+ <script>
+        $(function() {
+                $.ajax({
+                    url: './CollectIFControleur',
+                    type: 'POST',
+                    data: {
+                        todo: 'PAF',
+                        id : window.location.search.substring(1) // URL.html?<id>
+                    },
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    var evenement = data;
+                    var contenuHtml = "[" + evenement.id + "] " + evenement.denomination +"<br/> Date : "+evenement.date +"<br/> Moment : " +evenement.moment
+                        +"<br/>"+evenement.payant;
+                    $('#infos').html(contenuHtml);
+
+
+                })
+                .fail(function() {
+                    $('#infos').html('ERREUR de chargement');
+                })
+                .always(function() {
+                    //
+                });
+
+            });
+            
+            $(function() {
+
+                $.ajax({
+                    url: './CollectIFControleur',
+                    type: 'POST',
+                    data: {
+                        todo: 'listeLieux'
+                      //  param: '[...]' // etc.
+                    },
+                    dataType: 'json'
+                })
+                .done(function(data) {
+                    var Lieux = data.Lieux;
+                    var contenuHtml = "<label>Lieux</label><select class='form-control' name='lieux'>";
+                    var i;
+                    for (i = 0; i < Lieux.length; i++) {
+                        contenuHtml += '<option>'+ Lieux[i].denomination+'</option>';
+                    }
+                    contenuHtml += '</select>';
+                    $('#lieux').html(contenuHtml);
+                })
+                .fail(function() {
+                    $('#lieux').html('ERREUR de chargement');
+                })
+                .always(function() {
+                    //
+                });
+
+            });
+    </script>

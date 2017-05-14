@@ -17,22 +17,28 @@ import metier.modele.Evenement;
  *
  * @author Julien
  */
-public class ListeEvenementAction extends Action {
+public class EvenementAction extends Action {
 
     @Override
     public void execute(HttpServletRequest request) {
-        String todo = request.getParameter("todo");
+         String Sid = request.getParameter("id");
+        Long id = Long.parseLong(Sid);
         List<Evenement> evenements = new ArrayList();
+        System.out.println(id);
         try {
-            if(todo.equals("listeEvenements")){
-                evenements = service.consulterTDB();
-            } else {
-                evenements = service.consulterTDBaPlanifier();
-            }
+            evenements = service.consulterTDBaPlanifier();
+            
         } catch (Exception ex) {
             Logger.getLogger(ListeActiviteAction.class.getName()).log(Level.SEVERE, null, ex);
         }
-        request.setAttribute("evenements", evenements);
+        Evenement evenement= null;
+        for (Evenement a : evenements) {
+            if(a.getId().compareTo(id) == 0){
+                evenement = a;
+                break;
+            }
+        }
+        request.setAttribute("evenement", evenement);
     }
-
+    
 }

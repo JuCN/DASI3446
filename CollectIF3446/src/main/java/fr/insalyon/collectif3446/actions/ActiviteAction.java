@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import metier.modele.Activite;
+import metier.modele.Evenement;
 
 /**
  *
@@ -42,5 +43,6 @@ public class ActiviteAction extends Action {
       System.out.println(activite.toString());
         request.setAttribute("activite", activite);
     }
+       
     
 }

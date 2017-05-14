@@ -10,29 +10,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import metier.modele.Activite;
-import metier.modele.Evenement;
+import metier.modele.Adherent;
+import metier.modele.Demande;
+import metier.modele.Lieu;
 
 /**
  *
- * @author Julien
+ * @author ahamroun
  */
-public class ListeEvenementAction extends Action {
-
+public class ListeLieuxAction extends Action {
     @Override
     public void execute(HttpServletRequest request) {
-        String todo = request.getParameter("todo");
-        List<Evenement> evenements = new ArrayList();
+       
+        List<Lieu> lieux = new ArrayList();
+
         try {
-            if(todo.equals("listeEvenements")){
-                evenements = service.consulterTDB();
-            } else {
-                evenements = service.consulterTDBaPlanifier();
-            }
+            lieux= service.catalogueLieux();
         } catch (Exception ex) {
             Logger.getLogger(ListeActiviteAction.class.getName()).log(Level.SEVERE, null, ex);
         }
-        request.setAttribute("evenements", evenements);
+        request.setAttribute("Lieux", lieux);
     }
-
 }

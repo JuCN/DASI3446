@@ -12,12 +12,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dao.JpaUtil;
 import fr.insalyon.collectif3446.actions.Action;
+import fr.insalyon.collectif3446.actions.CarteAction;
 import fr.insalyon.collectif3446.actions.ConnexionAction;
 import fr.insalyon.collectif3446.actions.DemandeAction;
+import fr.insalyon.collectif3446.actions.EvenementAction;
 import fr.insalyon.collectif3446.actions.HistoriqueAction;
 import fr.insalyon.collectif3446.actions.InscriptionAction;
 import fr.insalyon.collectif3446.actions.ListeActiviteAction;
 import fr.insalyon.collectif3446.actions.ListeEvenementAction;
+import fr.insalyon.collectif3446.actions.ListeLieuxAction;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -31,6 +34,7 @@ import metier.modele.Activite;
 import metier.modele.Adherent;
 import metier.modele.Demande;
 import metier.modele.Evenement;
+import metier.modele.Lieu;
 
 /**
  *
@@ -59,6 +63,16 @@ public class CollectIFControleur extends HttpServlet {
                 } else {
                     System.out.println("L'utilisateur n'existe pas !");
                 }
+                break;
+            }
+            case "carte" : {
+                CarteAction cA = new CarteAction();
+                cA.execute(request);
+                List<Lieu> lieux = (List<Lieu>) request.getAttribute("lieux");
+                List<Adherent> adherents = (List<Adherent>) request.getAttribute("adherents");
+                PrintWriter out = response.getWriter();
+                printCarteLieux(out, lieux);
+                printCarteAdh(out, adherents);
                 break;
             }
             case "demande" : {
@@ -120,6 +134,34 @@ public class CollectIFControleur extends HttpServlet {
                 }
                 break;
             }
+            case "PAF" : {
+                Action eA = new EvenementAction();
+                eA.execute(request);
+                Evenement evenement = (Evenement) request.getAttribute("evenement");
+                PrintWriter out = response.getWriter();
+                printEvenement(out, evenement);
+                break;
+            }
+            case "listeLieux": {
+                Action la = new ListeLieuxAction();
+                la.execute(request);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                List<Lieu> LesLieux = (List<Lieu>) request.getAttribute("Lieux");
+                PrintWriter out = response.getWriter();
+                printListeLieux(out, LesLieux);
+                break;
+            }
+            case "listeEvenementsATraiter": {
+                Action lEA = new ListeEvenementAction();
+                lEA.execute(request);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                List<Evenement> lesEvenements = (List<Evenement>) request.getAttribute("evenements");
+                PrintWriter out = response.getWriter();
+                printListeEvenements(out, lesEvenements);
+                break;
+            }
             case "listeEvenements": {
                 Action lEA = new ListeEvenementAction();
                 lEA.execute(request);
@@ -168,6 +210,24 @@ public class CollectIFControleur extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+    private void printListeLieux(PrintWriter out, List<Lieu> lesLieux ) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonArray jsonListe = new JsonArray();
+        for (Lieu a : lesLieux) {
+            JsonObject jsonActivites = new JsonObject();
+            jsonActivites.addProperty("id", a.getId());
+            jsonActivites.addProperty("denomination", a.getDenomination());
+            jsonActivites.addProperty("type", a.getType());
+            jsonActivites.addProperty("adresse", a.getAdresse());
+            jsonListe.add(jsonActivites);
+        }
+
+        JsonObject container = new JsonObject();
+        container.add("Lieux", jsonListe);
+        out.println(gson.toJson(container));
+    }
 
     private void printListeActivites(PrintWriter out, List<Activite> lesActivites) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -184,6 +244,43 @@ public class CollectIFControleur extends HttpServlet {
 
         JsonObject container = new JsonObject();
         container.add("activites", jsonListe);
+        out.println(gson.toJson(container));
+    }
+    
+    private void printCarteLieux(PrintWriter out, List<Lieu> lieux) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonArray jsonListe = new JsonArray();
+        for (Lieu a : lieux) {
+            JsonObject jsonActivites = new JsonObject();
+            jsonActivites.addProperty("id", a.getId());
+            jsonActivites.addProperty("denomination", a.getDenomination());
+            jsonActivites.addProperty("latitude", a.getLatitude());
+            jsonActivites.addProperty("longitude", a.getLongitude());
+            jsonActivites.addProperty("adresse", a.getAdresse());
+            jsonListe.add(jsonActivites);
+        }
+
+        JsonObject container = new JsonObject();
+        container.add("lieux", jsonListe);
+        out.println(gson.toJson(container));
+    }
+    
+    private void printCarteAdh(PrintWriter out, List<Adherent> adherents) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonArray jsonListe = new JsonArray();
+        for (Adherent a : adherents) {
+            JsonObject jsonActivites = new JsonObject();
+            jsonActivites.addProperty("id", a.getId());
+            jsonActivites.addProperty("nom", a.getNom()+ " " + a.getPrenom());
+            jsonActivites.addProperty("latitude", a.getLatitude());
+            jsonActivites.addProperty("longitude", a.getLongitude());
+            jsonActivites.addProperty("adresse", a.getAdresse());
+            jsonListe.add(jsonActivites);
+        }
+
+        JsonObject container = new JsonObject();
+        container.add("adherents", jsonListe);
         out.println(gson.toJson(container));
     }
     
@@ -253,6 +350,27 @@ public class CollectIFControleur extends HttpServlet {
         jsonActivite.addProperty("payant", pay);
         jsonActivite.addProperty("nbParticipants", a.getNbParticipants());
         out.println(gson.toJson(jsonActivite));
+    }
+    
+    private void printEvenement(PrintWriter out, Evenement a) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonObject jsonActivites = new JsonObject();
+            jsonActivites.addProperty("id", a.getId());
+            jsonActivites.addProperty("denomination", a.getActivite().getDenomination());
+            String pay = "Payant";
+            if(!a.getActivite().getPayant()){
+                pay = "Gratuit";
+            }
+            jsonActivites.addProperty("payant", pay);
+            jsonActivites.addProperty("date", a.getDate().getDay());
+            jsonActivites.addProperty("moment", a.getMoment());
+            String res = "planifié";
+            if(a.getLieu()==null){
+                res = "à planifier";
+            }
+            jsonActivites.addProperty("statut", res);
+        out.println(gson.toJson(jsonActivites));
     }
     
     private void printUserName(PrintWriter out, Adherent adh) {

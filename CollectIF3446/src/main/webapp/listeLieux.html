@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Collect'IF - Liste des Evenements à traiter</title>
+        <title>Collect'IF - Liste des Activités</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
         <script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
     </head>
     <body>
-        <h1>Collect'IF &ndash; Liste des Evenements à traiter</h1>
-        <div id='listeEvenementsATraiter'>
+        <h1>Collect'IF &ndash; Liste des Lieux</h1>
+        <div id='listeLieux'>
             <span>chargement en cours...</span>
         </div>
         
@@ -16,38 +16,39 @@
 
 
         <script>
+            
             $(function() {
 
                 $.ajax({
                     url: './CollectIFControleur',
                     type: 'POST',
                     data: {
-                        todo: 'listeEvenementsATraiter'
+                        todo: 'listeLieux'
                       //  param: '[...]' // etc.
                     },
                     dataType: 'json'
                 })
                 .done(function(data) {
-                    var evenements = data.evenements;
+                    var Lieux = data.Lieux;
                     var contenuHtml = '<ul>';
                     var i;
-                    for (i = 0; i < evenements.length; i++) {
-                        contenuHtml += '<li>' + "[" + evenements[i].id + "] " + evenements[i].denomination +"<br/> Date : "+evenements[i].date +"<br/> Moment : " +evenements[i].moment
-                        +"<br/>"+evenements[i].payant+'<br/><a href="PAF.html?'+evenements[i].id+'">Traiter</a>'+"<br/><br/>";
+                    for (i = 0; i < Lieux.length; i++) {
+                        contenuHtml += '<li>' + "[" + Lieux[i].id + "] " + Lieux[i].denomination + '<br/>'+ 'Type : '+ Lieux[i].type + '<br/>'+  Lieux[i].adresse+'</li>';
                     }
                     contenuHtml += '</ul>';
-                    $('#listeEvenementsATraiter').html(contenuHtml);
-
-
+                    $('#listeLieux').html(contenuHtml);
                 })
                 .fail(function() {
-                    $('#listeEvenementsATraiter').html('ERREUR de chargement');
+                    $('#listeLieux').html('ERREUR de chargement');
                 })
                 .always(function() {
                     //
                 });
 
             });
+            
+            
+
         </script>
     </body>
 </html>
